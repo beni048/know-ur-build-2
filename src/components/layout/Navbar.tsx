@@ -3,58 +3,68 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { ThemeSwitcher } from '@/components/ThemeSwitcher'
 
 export default function Navbar() {
+  const { user, signOut } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const pathname = usePathname()
-
-  const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'Features', href: '/#features' },
-    { name: 'Pricing', href: '/pricing' },
-    { name: 'Dashboard', href: '/dashboard' },
-  ]
-
-  const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
-    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-      <Link
-        href={href}
-        className={`${
-          pathname === href
-            ? 'text-indigo-600 dark:text-indigo-400'
-            : 'text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400'
-        } transition-colors duration-200`}
-      >
-        {children}
-      </Link>
-    </motion.div>
-  )
 
   return (
-    <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
+    <nav className="bg-white dark:bg-gray-900 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link href="/" className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                Know Ur Build
-              </Link>
-            </motion.div>
+            <Link href="/" className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+              Know Ur Build
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden sm:flex sm:items-center sm:space-x-8">
-            {navigation.map((item) => (
-              <NavLink key={item.href} href={item.href}>
-                {item.name}
-              </NavLink>
-            ))}
+            <Link href="/" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
+              Home
+            </Link>
+            <Link href="/#features" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
+              Features
+            </Link>
+            <Link href="/pricing" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
+              Pricing
+            </Link>
+            
+            {user ? (
+              <>
+                <Link href="/dashboard" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
+                  Dashboard
+                </Link>
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {user.username}
+                  </span>
+                  <button
+                    onClick={() => signOut()}
+                    className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="/signin"
+                  className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
             <ThemeSwitcher />
           </div>
 
@@ -84,28 +94,70 @@ export default function Navbar() {
         </div>
 
         {/* Mobile menu */}
-        <motion.div
-          initial={false}
-          animate={isMenuOpen ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
-          className={`sm:hidden overflow-hidden transition-all`}
-        >
-          <div className="pt-2 pb-3 space-y-1">
-            {navigation.map((item) => (
+        {isMenuOpen && (
+          <div className="sm:hidden pb-3">
+            <div className="pt-2 pb-3 space-y-1">
               <Link
-                key={item.href}
-                href={item.href}
-                className={`${
-                  pathname === item.href
-                    ? 'text-indigo-600 dark:text-indigo-400'
-                    : 'text-gray-700 dark:text-gray-300'
-                } block px-3 py-2 text-base font-medium transition-colors duration-200`}
+                href="/"
+                className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
                 onClick={() => setIsMenuOpen(false)}
               >
-                {item.name}
+                Home
               </Link>
-            ))}
+              <Link
+                href="/#features"
+                className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Features
+              </Link>
+              <Link
+                href="/pricing"
+                className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Pricing
+              </Link>
+              {user ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setIsMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                  >
+                    Sign Out ({user.username})
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/signin"
+                    className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
-        </motion.div>
+        )}
       </div>
     </nav>
   )

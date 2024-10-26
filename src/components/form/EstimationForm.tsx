@@ -3,7 +3,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { motion } from 'framer-motion'
 
 interface EstimateResult {
@@ -13,7 +13,7 @@ interface EstimateResult {
 }
 
 export default function EstimationForm() {
-  const { data: session } = useSession()
+  const { user } = useAuth()
   const [description, setDescription] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<EstimateResult | null>(null)
@@ -21,7 +21,7 @@ export default function EstimationForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!session) {
+    if (!user) {
       setError('Please sign in to use this feature')
       return
     }
@@ -44,7 +44,7 @@ export default function EstimationForm() {
 
       const data = await response.json()
       setResult(data)
-    } catch (err) {
+    } catch (err: any) {
       setError('Failed to generate estimate. Please try again.')
       console.error(err)
     } finally {
@@ -87,19 +87,13 @@ export default function EstimationForm() {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           type="submit"
-          disabled={isLoading || !session}
+          disabled={isLoading || !user}
           className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${
-            (isLoading || !session) ? 'opacity-50 cursor-not-allowed' : ''
+            (isLoading || !user) ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
           {isLoading ? 'Generating Estimate...' : 'Get Estimate'}
         </motion.button>
-
-        {!session && (
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-            Please sign in to use this feature
-          </p>
-        )}
       </form>
 
       {result && (
