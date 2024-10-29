@@ -1,32 +1,47 @@
 // src/app/api/auth/[...nextauth]/route.ts
 
 import NextAuth from "next-auth"
-import GoogleProvider from "next-auth/providers/google"
-import { MongoDBAdapter } from "@auth/mongodb-adapter"
-import clientPromise from "@/lib/db"
+import CredentialsProvider from "next-auth/providers/credentials"
+import dbConnect from "@/lib/db"
+import User from "@/models/User"
+import { NextAuthOptions } from "next-auth"
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.username || !credentials?.password) {
+          return null
+        }
+        
+        await dbConnect()
+        const user = await User.findOne({ username: credentials.username })
+        
+        if (!user || !(await user.verifyPassword(credentials.password))) {
+          return null
+        }
+        
+        return {
+          id: user._id.toString(),
+          name: user.username,
+          email: user.email
+        }
+      }
+    })
   ],
-  adapter: MongoDBAdapter(clientPromise),
   session: {
-    strategy: "jwt",
+    strategy: "jwt"
   },
   pages: {
-    signIn: "/auth/signin",
+    signIn: '/signin'
   },
-  callbacks: {
-    async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = token.sub;
-      }
-      return session;
-    },
-  },
-})
+  secret: process.env.NEXTAUTH_SECRET
+}
 
+const handler = NextAuth(authOptions)
 export { handler as GET, handler as POST }
