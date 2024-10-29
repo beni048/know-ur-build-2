@@ -25,7 +25,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="text-gray-400 hover:text-white">
+                <Link href="/#pricing" className="text-gray-400 hover:text-white">
                   Pricing
                 </Link>
               </li>
@@ -41,8 +41,18 @@ export default function Footer() {
           <div>
             <h3 className="text-white text-lg font-semibold mb-4">Contact</h3>
             <ul className="space-y-2 text-gray-400">
-              <li>Email: contact@knowurbuild.com</li>
-              <li>Follow us on Twitter @knowurbuild</li>
+              <li>Made with ✨ by webjamin</li>
+              <li>
+                Follow us on X:{' '}
+                <a 
+                  href="https://twitter.com/webjaminx" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-white"
+                >
+                  @webjaminx
+                </a>
+              </li>
             </ul>
           </div>
         </div>

@@ -28,7 +28,7 @@ export default function Navbar() {
             <Link href="/#features" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
               Features
             </Link>
-            <Link href="/pricing" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
+            <Link href="/#pricing" className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
               Pricing
             </Link>
             
@@ -112,7 +112,7 @@ export default function Navbar() {
                 Features
               </Link>
               <Link
-                href="/pricing"
+                href="/#pricing"
                 className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400"
                 onClick={() => setIsMenuOpen(false)}
               >
